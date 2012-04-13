@@ -1,0 +1,115 @@
+<html> 
+<head> 
+	<meta http-equiv="content-type" content="text/html; charset=utf-8"> 
+	<title>Grouped DataTable</title> 
+
+	<!-- Individual YUI CSS files --> 
+	<link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/2.9.0/build/datatable/assets/skins/sam/datatable.css"> 
+	<link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/2.9.0/build/menu/assets/skins/sam/menu.css"> 
+	<!-- Individual YUI JS files --> 
+	<script type="text/javascript" src="http://yui.yahooapis.com/2.9.0/build/yahoo-dom-event/yahoo-dom-event.js"></script> 
+	<script type="text/javascript" src="http://yui.yahooapis.com/2.9.0/build/dragdrop/dragdrop-min.js"></script> 
+	<script type="text/javascript" src="http://yui.yahooapis.com/2.9.0/build/element/element-min.js"></script> 
+	<script type="text/javascript" src="http://yui.yahooapis.com/2.9.0/build/datasource/datasource-min.js"></script> 
+	<script type="text/javascript" src="http://yui.yahooapis.com/2.9.0/build/container/container_core-min.js"></script> 
+	<script type="text/javascript" src="http://yui.yahooapis.com/2.9.0/build/menu/menu-min.js"></script> 
+	<script type="text/javascript" src="http://yui.yahooapis.com/2.9.0/build/datatable/datatable-min.js"></script>
+
+	<!-- Custom Groupable Datatable YUI Assets --> 
+	<link rel="stylesheet" type="text/css" href="datatable-grouping.css" />
+	<script type="text/javascript" src="datatable-grouping.js"></script>
+	<script type="text/javascript" src="datatable-aggregation.js"></script>
+
+	<!-- Custom Context Menu YUI CSS files --> 
+	<script type="text/javascript" src="datatable-contextmenu.js"></script>
+
+	<!-- demo page css -->
+	<style>
+	body {
+		font-size: .8em;
+		background: #e0e0ef
+	}
+	h1 {
+		font-family: "century gothic", sans-serif;
+		color: #444;
+		text-shadow: #999 -1px 2px 1px;
+		font-size: 2em;
+	}
+	.exampleIntro {
+		font-family: serif;
+		font-size: 1.3em;
+	}
+	.s {
+		color: #ff2020;
+		font-variant:small-caps;
+		font-size: 1.1em;
+		text-shadow: #bbb -1px 1px 1px;
+	}
+	</style>
+</head> 
+ 
+<body class="yui-skin-sam"> 
+	<h1>GroupedDataTable's basic feature set.</h1> 
+	<div class="exampleIntro"> 
+		<p>
+		<ul>
+			<li><span class='s'>name</span>, <span class='s'>address</span>, and <span class='s'>last login</span> have been set to 'non-groupable'.</li>
+			<li>Try grouping by <span class='s'>state</span> by dragging the column header past the 'group-bar' (the far-left empty column).</li>
+			<li>Then by drag the <span class='s'>city</span> column between the state and 'group-bar'.</li>
+			<li>Try sorting by <span class='s'>last login</span>.</li>
+			<li>Try sorting by <span class='s'>city</span>.</li>
+			<li>Notice the aggregated <span class='s'>amount</span> column summation.</li>
+		</ul>
+		</p> 		
+	</div> 	 
+	<div id="basic"></div> 
+ 
+	<!-- YUI dummy data --> 
+	<script type="text/javascript" src="data.js"></script> 
+	<script type="text/javascript">
+	YAHOO.util.Event.addListener(window, "load", function() {
+		YAHOO.example.Basic = function() {
+
+			// column definitions
+			// notice new groupable/aggregator properties.
+			var myColumnDefs = [
+				{key:"name", groupable:false},
+				{key:"address", groupable:false},
+				{key:"city"},
+				{key:"state"},
+				{key:"amount", formatter:"currency", aggregator:"sumAggregator"},
+				{key:"active"},
+				{key:"colors", label:"fave color", aggregator:"commaSeparatedAggregator"},
+				{key:"last_login", label:"last login", formatter:"date", aggregator:"maxDateAggregator", parser: "date", groupable:false}
+			];
+
+			// default sorting, resizing, grouping, and class name values 
+			// if they aren't already set in the column defs.
+			var col = null;
+			for(coli in myColumnDefs) {
+				col = myColumnDefs[coli];	
+
+				col.sortable = col.sortable != undefined ? col.sortable : true; 
+				col.resizeable = col.resizeable != undefined ? col.resizeable : true; 
+				col.groupable = col.groupable != undefined ? col.groupable : true; 
+			}
+
+			// datasource from yahoo example data.
+			var myDataSource = new YAHOO.util.DataSource(YAHOO.example.Data.addresses);
+
+			// create grouping datatable, draggable columns set to true brings it to life.
+			var myDataTable = new YAHOO.widget.GroupedDataTable("basic",
+				myColumnDefs, myDataSource, {caption:"Grouped DataTable", draggableColumns:true});
+
+			// add the context menu
+			myDataTable.addContextMenu('basic');
+
+			return {
+				oDS: myDataSource,
+				oDT: myDataTable
+			};
+		}();
+	});
+	</script> 
+</body>
+</html>
